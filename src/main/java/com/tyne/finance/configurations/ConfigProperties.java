@@ -19,5 +19,8 @@ public class ConfigProperties {
         private int hashIterations;
         private int hashLen;
         private int saltLen;
+        private String commonPasswordsFile;
+        private int passwordMinLen;
+        private double maxPasswordSimilarity;
     }
 }

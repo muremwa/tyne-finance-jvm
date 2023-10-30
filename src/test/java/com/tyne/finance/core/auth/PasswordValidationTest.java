@@ -43,7 +43,7 @@ public class PasswordValidationTest {
     void testNumericPassword() {
         List<String> invalidPasswords = List.of("1234", "32562635243242", "2");
         for (String password: invalidPasswords) {
-            assertTrue(validator.validate(password, null).contains("This password is entirely numeric."));
+            assertTrue(validator.validate(password, null).contains("This password is entirely numeric"));
         }
 
         List<String> validPasswords = List.of("password123", "123password", "pass123word", "pa1ss2wor3d");

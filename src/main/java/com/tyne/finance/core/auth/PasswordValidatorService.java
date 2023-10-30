@@ -4,6 +4,7 @@ package com.tyne.finance.core.auth;
 import com.tyne.finance.configurations.ConfigProperties;
 import com.tyne.finance.core.auth.i.PasswordValidator;
 import com.tyne.finance.exceptions.core.ValidationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.stereotype.Service;
@@ -22,16 +23,9 @@ interface PasswordValidatorFunction {
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PasswordValidatorService implements PasswordValidator {
     private final ConfigProperties properties;
-    private final List<String> commonPasswords;
-
-    public PasswordValidatorService(ConfigProperties properties) {
-        this.properties = properties;
-        this.commonPasswords = PasswordValidatorService.setUpCommonPasswords(
-                this.properties.getSecurity().getCommonPasswordsFile()
-        );
-    }
 
     @Override
     public List<String> validate(String password, Map<String, String> attributes) {
@@ -91,7 +85,8 @@ public class PasswordValidatorService implements PasswordValidator {
     }
 
     private void commonPasswordsValidator(String password) throws ValidationException {
-        if (Collections.binarySearch(this.commonPasswords, password) > -1) {
+        List<String> commonPasswords = setUpCommonPasswords(this.properties.getSecurity().getCommonPasswordsFile());
+        if (Collections.binarySearch(commonPasswords, password) > -1) {
             throw new ValidationException("This password is too common");
         }
     }

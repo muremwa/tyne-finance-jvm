@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 @Data
@@ -47,4 +48,12 @@ public class User {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "currency_id", referencedColumnName = "id")
     private Currency currency;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "core_user_groups",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")}
+    )
+    private List<Group> groups;
 }

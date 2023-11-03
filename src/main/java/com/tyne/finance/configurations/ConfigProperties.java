@@ -15,6 +15,8 @@ public class ConfigProperties {
 
     @Data
     public static class Security {
+        private String secretKey;
+        private long tokenExpirationTime;
         private String hashAlgorithm;
         private int hashIterations;
         private int hashLen;

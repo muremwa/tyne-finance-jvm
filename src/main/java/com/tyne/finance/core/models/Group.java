@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Data
 @Table(name = "auth_group")
@@ -16,4 +17,12 @@ public class Group {
     private BigInteger groupID;
 
     private String name;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "auth_group_permissions",
+            joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")}
+    )
+    private List<Permission> permissions;
 }

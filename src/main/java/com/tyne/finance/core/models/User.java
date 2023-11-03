@@ -6,7 +6,9 @@ import lombok.ToString;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -56,4 +58,21 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")}
     )
     private List<Group> groups;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "core_user_user_permissions",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "permission_id", referencedColumnName = "id")}
+    )
+    private List<Permission> permissions;
+
+
+    public List<Permission> getAllPermissions() {
+        Set<Permission> permissionSet = new HashSet<>(this.permissions);
+        for (Group group: this.groups) {
+            permissionSet.addAll(group.getPermissions());
+        }
+        return permissionSet.stream().toList();
+    }
 }

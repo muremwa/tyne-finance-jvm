@@ -8,4 +8,6 @@ import java.math.BigInteger;
 
 
 @Repository
-public interface CoreUserRepository extends JpaRepository<User, BigInteger> {}
+public interface CoreUserRepository extends JpaRepository<User, BigInteger> {
+    public User findUserByUsername(String username);
+}

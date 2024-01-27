@@ -5,6 +5,7 @@ import com.tyne.finance.core.auth.i.JwtProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@Service
 public class CoreJwtProvider implements JwtProvider {
     private final ConfigProperties properties;
     private final SecretKey encryptionKey;

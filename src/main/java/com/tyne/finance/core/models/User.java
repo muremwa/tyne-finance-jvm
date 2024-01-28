@@ -51,7 +51,7 @@ public class User {
     @JoinColumn(name = "currency_id", referencedColumnName = "id")
     private Currency currency;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "core_user_groups",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
@@ -59,7 +59,7 @@ public class User {
     )
     private List<Group> groups;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "core_user_user_permissions",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
@@ -67,10 +67,9 @@ public class User {
     )
     private List<Permission> permissions;
 
-
     public List<Permission> getAllPermissions() {
         Set<Permission> permissionSet = new HashSet<>(this.permissions);
-        for (Group group: this.groups) {
+        for (Group group: this.getGroups()) {
             permissionSet.addAll(group.getPermissions());
         }
         return permissionSet.stream().toList();

@@ -29,7 +29,7 @@ public class PasswordValidatorService implements PasswordValidator {
 
     @Override
     public List<String> validate(String password, Map<String, String> attributes) {
-        log.info("Validating password: {}", password);
+        log.info("Validating password");
         PasswordValidatorFunction[] validators = new PasswordValidatorFunction[4];
         validators[0] = () -> this.userAttributeSimilarityValidator(password, attributes);
         validators[1] = () -> this.minimumLengthValidator(password);
@@ -58,12 +58,16 @@ public class PasswordValidatorService implements PasswordValidator {
             LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
 
             for(Map.Entry<String, String> attribute: attributes.entrySet()) {
-                int editDistance = levenshteinDistance.apply(password, attribute.getValue().toLowerCase());
-                double editDistanceRatio = editDistance / (double) Math.max(attribute.getValue().length(), password.length());
+                String attributeValue = attribute.getValue();
 
-                double similarityRatio = 1 - editDistanceRatio;
-                if (similarityRatio > this.properties.getSecurity().getMaxPasswordSimilarity()) {
-                    similarity.add(attribute.getKey());
+                if (attributeValue != null) {
+                    int editDistance = levenshteinDistance.apply(password, attributeValue.toLowerCase());
+                    double editDistanceRatio = editDistance / (double) Math.max(attribute.getValue().length(), password.length());
+
+                    double similarityRatio = 1 - editDistanceRatio;
+                    if (similarityRatio > this.properties.getSecurity().getMaxPasswordSimilarity()) {
+                        similarity.add(attribute.getKey());
+                    }
                 }
             }
 

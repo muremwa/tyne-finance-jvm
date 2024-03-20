@@ -3,7 +3,7 @@ package com.tyne.finance.core.repositories;
 import com.tyne.finance.core.dto.UserCreationRequest;
 import com.tyne.finance.core.models.User;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Null;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

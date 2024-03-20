@@ -24,6 +24,5 @@ public class ConfigProperties {
         private String commonPasswordsFile;
         private int passwordMinLen;
         private double maxPasswordSimilarity;
-        private int normalUserGroupId;
     }
 }

@@ -10,6 +10,7 @@ import com.tyne.finance.core.dto.AuthRequest;
 import com.tyne.finance.core.dto.AuthResponse;
 import com.tyne.finance.core.dto.UserCreationRequest;
 import com.tyne.finance.core.models.Currency;
+import com.tyne.finance.core.models.Group;
 import com.tyne.finance.core.models.User;
 import com.tyne.finance.core.repositories.CoreCurrencyRepository;
 import com.tyne.finance.core.repositories.CoreUserRepository;
@@ -21,17 +22,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Controller()
+@RestController()
 @RequestMapping("/core")
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +44,7 @@ public class CoreController {
     private final CoreCurrencyRepository currencyRepository;
     private final CoreUserRepository userRepository;
     private final PasswordValidatorService passwordValidatorService;
+    private final Group defaultUserGroup;
 
     private ResponseEntity<TyneResponse<AuthResponse>> simpleBadRequest(String message) {
         return ResponseEntity
@@ -102,7 +104,6 @@ public class CoreController {
             );
         }
 
-
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         date.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.userRepository.createNewUser(
@@ -119,11 +120,9 @@ public class CoreController {
             );
         }
 
-        // add to group
-        if (this.properties.getSecurity().getNormalUserGroupId() > -1) {
-            this.userRepository.addUserToGroup(newUser.getUserID().intValue(), this.properties.getSecurity().getNormalUserGroupId());
-            log.info("User added to group {}", this.properties.getSecurity().getNormalUserGroupId());
-        }
+        // add to default group
+        this.userRepository.addUserToGroup(newUser.getUserID().intValue(), this.defaultUserGroup.getGroupID());
+        log.info("User added to group {}", this.defaultUserGroup.getGroupID());
 
         AuthResponse response = AuthResponse.builder()
                 .token(this.jwt.generateToken(new CoreUserDetails(newUser)))

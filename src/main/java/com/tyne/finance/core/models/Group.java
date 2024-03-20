@@ -4,7 +4,6 @@ package com.tyne.finance.core.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -14,7 +13,7 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private BigInteger groupID;
+    private Integer groupID;
 
     private String name;
 

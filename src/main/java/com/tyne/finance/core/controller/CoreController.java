@@ -9,6 +9,8 @@ import com.tyne.finance.core.auth.i.JwtProvider;
 import com.tyne.finance.core.dto.AuthRequest;
 import com.tyne.finance.core.dto.AuthResponse;
 import com.tyne.finance.core.dto.UserCreationRequest;
+import com.tyne.finance.core.dto.UserInformation;
+import com.tyne.finance.core.mappers.UserInformationMapper;
 import com.tyne.finance.core.models.Currency;
 import com.tyne.finance.core.models.Group;
 import com.tyne.finance.core.models.User;
@@ -43,6 +45,7 @@ public class CoreController {
     private final CoreUserRepository userRepository;
     private final PasswordValidatorService passwordValidatorService;
     private final Group defaultUserGroup;
+    private final UserInformationMapper userInformationMapper;
 
     private ResponseEntity<TyneResponse<AuthResponse>> simpleBadRequest(String message) {
         return ResponseEntity
@@ -141,11 +144,20 @@ public class CoreController {
 
 
     @GetMapping("/account")
-    public ResponseEntity<String> accountDetails(Principal principal) {
-        System.out.println(">>>>>>>>>>>>>>>>>");
-        System.out.println(principal);
-        System.out.println(">>>>>>>>>>>>>>>>>");
+    public ResponseEntity<TyneResponse<UserInformation>> accountDetails(Principal principal) {
+        User user = this.userRepository.findUserByUsername(principal.getName());
 
-        return ResponseEntity.ok("SOMETHING");
+
+        UserInformation information = userInformationMapper.userToUserInformation(user);
+        System.out.println(user);
+        System.out.println(information);
+
+        return ResponseEntity.ok(
+                TyneResponse.<UserInformation>builder()
+                        .message("Success")
+                        .status(true)
+                        .data(information)
+                        .build()
+        );
     }
 }

@@ -53,6 +53,12 @@ public class CoreController {
                 .body(TyneResponse.<AuthResponse>builder().data(null).status(false).message(message).build());
     }
 
+    private String formatDate(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return simpleDateFormat.format(date);
+    }
+
     @PostMapping("/sign-in")
     public ResponseEntity<TyneResponse<AuthResponse>> signIn(@Valid @RequestBody AuthRequest request) {
         log.info("Authenticating: {}", request.getUsername());
@@ -61,6 +67,7 @@ public class CoreController {
         AuthResponse.AuthResponseBuilder response = AuthResponse.builder().username(request.getUsername());
 
         if (isPasswordCorrect) {
+            this.userRepository.updateUserLastLogin(user.getUsername(), this.formatDate(new Date()));
             response
                     .tokenTTL(this.properties.getSecurity().getTokenExpirationTime())
                     .token(this.jwt.generateToken(user));
@@ -105,12 +112,10 @@ public class CoreController {
             );
         }
 
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        date.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.userRepository.createNewUser(
                 request,
                 this.security.createNewPasswordKey(request.getPassword()),
-                date.format(new Date()),
+                this.formatDate(new Date()),
                 currency.get().getCurrencyID().intValue()
         );
         User newUser = this.userRepository.findUserByUsername(request.getUsername());
@@ -145,12 +150,9 @@ public class CoreController {
 
     @GetMapping("/account")
     public ResponseEntity<TyneResponse<UserInformation>> accountDetails(Principal principal) {
-        User user = this.userRepository.findUserByUsername(principal.getName());
-
-
-        UserInformation information = userInformationMapper.userToUserInformation(user);
-        System.out.println(user);
-        System.out.println(information);
+        UserInformation information = userInformationMapper.userToUserInformation(
+                this.userRepository.findUserByUsername(principal.getName())
+        );
 
         return ResponseEntity.ok(
                 TyneResponse.<UserInformation>builder()

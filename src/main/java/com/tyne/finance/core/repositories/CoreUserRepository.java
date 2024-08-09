@@ -37,4 +37,9 @@ public interface CoreUserRepository extends JpaRepository<User, BigInteger> {
             nativeQuery = true
     )
     void createNewUser(@Param("request") UserCreationRequest request, @Param("password") String password, @Param("date") String date, @Param("currency") int currency);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE core_user SET last_login = :last_login WHERE core_user.username = :username", nativeQuery = true)
+    void updateUserLastLogin(@Param("username") String username, @Param("last_login") String lastLogin);
 }

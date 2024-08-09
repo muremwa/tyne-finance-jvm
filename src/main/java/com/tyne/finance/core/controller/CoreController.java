@@ -22,13 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -139,5 +137,15 @@ public class CoreController {
                                 .data(response)
                                 .build()
                 );
+    }
+
+
+    @GetMapping("/account")
+    public ResponseEntity<String> accountDetails(Principal principal) {
+        System.out.println(">>>>>>>>>>>>>>>>>");
+        System.out.println(principal);
+        System.out.println(">>>>>>>>>>>>>>>>>");
+
+        return ResponseEntity.ok("SOMETHING");
     }
 }

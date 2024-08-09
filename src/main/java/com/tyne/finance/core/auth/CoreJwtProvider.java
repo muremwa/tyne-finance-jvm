@@ -44,12 +44,11 @@ public class CoreJwtProvider implements JwtProvider {
     }
 
     @Override
-    public boolean validateToken(String token) {
+    public Map<String, Object> validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(this.encryptionKey).build().parseSignedClaims(token);
-            return true;
+            return Jwts.parser().verifyWith(this.encryptionKey).build().parseSignedClaims(token).getPayload();
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 }

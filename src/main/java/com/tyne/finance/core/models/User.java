@@ -51,7 +51,7 @@ public class User {
     @JoinColumn(name = "currency_id", referencedColumnName = "id")
     private Currency currency;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "core_user_groups",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
@@ -59,7 +59,7 @@ public class User {
     )
     private List<Group> groups;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "core_user_user_permissions",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},

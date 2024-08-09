@@ -9,6 +9,9 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 
 @RestControllerAdvice
@@ -30,6 +33,16 @@ public class ControllerAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<TyneResponse<String>> unreadableRequest() {
         return ResponseEntity.badRequest().body(this.generateTyneResponse("Required request body is missing or invalid"));
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<TyneResponse<String>> constraintViolation() {
+        return ResponseEntity.badRequest().body(this.generateTyneResponse("You may have entered a duplicate entry, please check again"));
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<TyneResponse<String>> forbiddenAction() {
+        return ResponseEntity.badRequest().body(this.generateTyneResponse("You're not allowed to perform this action"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

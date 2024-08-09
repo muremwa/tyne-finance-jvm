@@ -6,16 +6,14 @@ import com.tyne.finance.core.auth.CoreUserDetails;
 import com.tyne.finance.core.auth.CoreUserDetailsService;
 import com.tyne.finance.core.auth.PasswordValidatorService;
 import com.tyne.finance.core.auth.i.JwtProvider;
-import com.tyne.finance.core.dto.AuthRequest;
-import com.tyne.finance.core.dto.AuthResponse;
-import com.tyne.finance.core.dto.UserCreationRequest;
-import com.tyne.finance.core.dto.UserInformation;
+import com.tyne.finance.core.dto.*;
 import com.tyne.finance.core.mappers.UserInformationMapper;
 import com.tyne.finance.core.models.Currency;
 import com.tyne.finance.core.models.Group;
 import com.tyne.finance.core.models.User;
 import com.tyne.finance.core.repositories.CoreCurrencyRepository;
 import com.tyne.finance.core.repositories.CoreUserRepository;
+import com.tyne.finance.core.services.AccountService;
 import com.tyne.finance.dto.TyneResponse;
 import com.tyne.finance.exceptions.AuthenticationException;
 import jakarta.validation.Valid;
@@ -26,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -46,6 +45,7 @@ public class CoreController {
     private final PasswordValidatorService passwordValidatorService;
     private final Group defaultUserGroup;
     private final UserInformationMapper userInformationMapper;
+    private final AccountService accountService;
 
     private ResponseEntity<TyneResponse<AuthResponse>> simpleBadRequest(String message) {
         return ResponseEntity
@@ -161,5 +161,43 @@ public class CoreController {
                         .data(information)
                         .build()
         );
+    }
+
+
+    @GetMapping("/currencies")
+    public ResponseEntity<TyneResponse<List<Currency>>> getCurrencies() {
+        log.info("Fetch Currencies");
+        return ResponseEntity.ok(
+                TyneResponse.<List<Currency>>builder()
+                        .message("Success")
+                        .status(true)
+                        .data(this.currencyRepository.findAll())
+                        .build()
+        );
+    }
+
+    @GetMapping("/accounts")
+    public ResponseEntity<TyneResponse<List<AccountDTO>>> getUserAccounts(Principal principal) {
+        log.info("Fetch UserAccounts");
+        return ResponseEntity.ok(this.accountService.getAccounts(principal.getName()));
+    }
+
+    @PostMapping("/accounts")
+    public ResponseEntity<TyneResponse<AccountDTO>> addNewAccount(Principal principal, @RequestBody AccountDTO accountDTO) {
+        log.info("Add new account");
+        return ResponseEntity.ok(this.accountService.updateAccount(accountDTO, principal.getName()));
+    }
+
+    @PatchMapping("/accounts/{account_id}")
+    public ResponseEntity<TyneResponse<AccountDTO>> updateAccount(Principal principal, @RequestBody AccountDTO accountDTO, @PathVariable BigInteger account_id) {
+        log.info("Updating account account: {}", account_id);
+        accountDTO.setAccountID(account_id);
+        return ResponseEntity.ok(this.accountService.updateAccount(accountDTO, principal.getName()));
+    }
+
+    @PostMapping("/accounts/{account_id}/update-status")
+    public ResponseEntity<TyneResponse<Boolean>> updateAccountStatus(Principal principal, @PathVariable BigInteger account_id) {
+        log.info("Updating account status account: {}", account_id);
+        return ResponseEntity.ok(this.accountService.updateAccountStatus(account_id, principal.getName()));
     }
 }
